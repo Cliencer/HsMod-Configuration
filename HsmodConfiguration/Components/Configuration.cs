@@ -179,6 +179,12 @@ namespace HsmodConfiguration.Components
                 {
                     Configuration.isSkinsLoad = true;
                 }
+                List<string> kindlist = ["硬币", "卡背", "对战面板", "酒馆战斗面板", "酒馆击杀特效", "鲍勃"];
+                foreach(string k in kindlist)
+                {
+                    skins.Add(k, new Dictionary<string, string>());
+                    skins[k].Add("-1", "不做修改");
+                }
                 string kind="";
                 foreach (string line in lines)
                 {
@@ -224,8 +230,8 @@ namespace HsmodConfiguration.Components
                         }
                         if (!skins.ContainsKey(skinkind))
                         {
-                            skins.Add(skinkind, new Dictionary<string, string>());
-                            skins[skinkind].Add("-1", "不做修改");
+                            skins.Add(kind, new Dictionary<string, string>());
+                            skins[kind].Add("-1", "不做修改");
                         }
 
                         skins[skinkind].Add(word[0], word[1]);

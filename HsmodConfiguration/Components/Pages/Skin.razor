@@ -10,7 +10,9 @@
         foreach (string kind in _List)
         {
             var cfg = Configuration.hsmodcfg[kind];
+           
             <MudPaper Class="pa-3 ma-2" Elevation="3">
+                 <MudTooltip Text="提示：如果只有不做修改选项，请在游戏内按F4读取后重启游戏。" Arrow="true" Placement="Placement.Top">
                 <MudSelect @bind-Value="cfg.tranValue"
                 Variant="Variant.Outlined"
                 Label="@cfg.key"
@@ -20,7 +22,9 @@
                         <MudSelectItem Value="@item">@item</MudSelectItem>
                     }
             </MudSelect>
+                </MudTooltip>
             </MudPaper>
+            
         }
     }
 
