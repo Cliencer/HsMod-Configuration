@@ -1,0 +1,34 @@
+﻿@using System.Timers
+<MudNavMenu>
+    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Outlined.Settings">常规设置</MudNavLink>
+    <MudNavLink Href="battle" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.SportsEsports" Disabled="@(!Configuration.login)">对战增强</MudNavLink>
+    @if (Configuration.isSkinsLoad & Configuration.login)
+    {
+        <MudNavLink Href="skin" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.AutoFixHigh">皮肤设置</MudNavLink>
+    }
+    else
+    {
+        <MudTooltip Text="未读取到皮肤数据库，启用插件并重启游戏后，再至软件中点击右上方刷新" Arrow="true" Placement="Placement.Right">
+            <MudNavLink Href="skin" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.AutoFixHigh" Disabled="true">皮肤设置</MudNavLink>
+        </MudTooltip>
+    }
+    
+    <MudNavLink Href="shortcut" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.Keyboard"Disabled="@(!Configuration.login)">快捷按键</MudNavLink>
+    <MudNavLink Href="simulation" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.Stars" Disabled="@(!Configuration.login)">模拟开包</MudNavLink>
+    <MudNavLink Href="developer" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Outlined.PestControl" Disabled="@(!Configuration.login)">高级工具</MudNavLink>
+</MudNavMenu>
+
+@code {
+     private Timer timer = new Timer(1000);
+    async protected override void OnInitialized()
+        {
+    timer.Elapsed += Timer_Elapsed;
+    timer.Start();
+        }
+        private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+    InvokeAsync(() => StateHasChanged()); // 触发组件重新渲染
+        }
+}
+
+

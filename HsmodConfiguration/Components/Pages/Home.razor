@@ -1,0 +1,125 @@
+﻿@page "/"
+
+@inject Configuration conf
+@using System.Timers
+<PageTitle>常规设置</PageTitle>
+
+<MudStack Row="true" Wrap="Wrap.Wrap" Justify="Justify.SpaceEvenly">
+    <MudPaper Class="pa-3 ma-2" Elevation="3">
+        <MudPaper Class="pa-2 ma-1">
+            <MudTextField @bind-Value="conf.url" Label="Url地址" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+            <MudTextField @bind-Value="conf.port" Label="端口" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
+        </MudPaper>
+
+
+        @if (_processing)
+        {
+            <MudButton Disabled="@_processing" OnClick="relink" Variant="Variant.Filled" Color="Color.Primary">
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                <MudText Class="ms-2">正在连接服务器</MudText>
+            </MudButton>
+        }
+        else 
+        {
+            if (Configuration.login)
+            {
+                <MudStack Row="true" Wrap="Wrap.Wrap">
+                    <MudButton Disabled="@_processing" OnClick="relink" Variant="Variant.Filled" Color="Color.Success">
+                        <MudText>已连接插件</MudText>
+                    </MudButton>
+                    <MudPaper Class="pa-3">PID: @conf.pid</MudPaper>
+                </MudStack>
+            }
+            else
+            {
+                <MudButton Disabled="@_processing" OnClick="relink" Variant="Variant.Filled" Color="Color.Error">
+                    <MudText>失败请重连</MudText>
+                </MudButton>
+            }
+
+        }
+
+    </MudPaper>
+    @if (conf.hsmodcfg != null)
+    {
+        foreach (List<string> card in _List)
+        {
+            <MudPaper Class="pa-3 ma-2" Elevation="3">
+                @foreach (string item in card)
+                {
+                    var cfg = conf.hsmodcfg[item];
+                    if (cfg.type == typeof(int))
+                    {
+                        if (cfg.acceptableRange != null & cfg.acceptableRange.Count == 2)
+                        {
+                            <MudNumericField @bind-Value="cfg.intValue" Label="@cfg.key" HelperText="@cfg.ps" Variant="Variant.Outlined" Min="cfg.acceptableRange[0]" Max="cfg.acceptableRange[1]" />
+                        }
+                        else
+                        {
+                            <MudNumericField @bind-Value="cfg.intValue" Label="@cfg.key" HelperText="@cfg.ps" Variant="Variant.Outlined" Min="0" Max="2147483647" />
+                        }
+                    }
+                    else if (cfg.type == typeof(bool))
+                    {
+                        <MudTooltip Text="@cfg.ps" Arrow="true">
+                            <MudSwitch @bind-Value="cfg.boolValue" ThumbIcon="@(cfg.boolValue==true ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" HelperText="@cfg.ps" ThumbIconColor="@(cfg.boolValue==true ? Color.Success : Color.Error)">@cfg.key</MudSwitch>
+                        </MudTooltip>
+                    }
+                    else if (cfg.type == typeof(string))
+                    {
+                        if (cfg.acceptValue != null)
+                        {
+                            <MudSelect @bind-Value="cfg.stringValue"
+                            Variant="Variant.Outlined"
+                            Label="@cfg.key"
+
+                            HelperText="@cfg.ps">
+                                @foreach (var value in cfg.acceptValue)
+                                {
+                                    <MudSelectItem Value="value">@value</MudSelectItem>
+                                }
+                            </MudSelect>
+                        }
+                    }
+                }
+            </MudPaper>
+        }
+    }
+
+</MudStack>
+
+
+
+
+@code {
+    private bool _processing = false;
+    private List<List<string>> _List = [["快捷键状态","变速齿轮状态", "显示FPS", "游戏帧率", "变速倍率", "开包加速", "快速战斗"], ["自动开包", "自动分解", "自动开盒", "自动举报", "自动领奖"], ["允许掉线", "游戏内消息", "结算展示", "弹出消息", "报错退出", "弹出响应"], ["收藏卡牌数量", "显示卡牌ID", "自动置换卡牌", "显示放弃"]];
+    private Timer timer = new Timer(1000);
+    async protected override void OnInitialized()
+    {
+        timer.Elapsed += Timer_Elapsed;
+        timer.Start();
+    }
+    async Task relink()
+    {
+        _processing = true;
+
+        await Task.Delay(1000);
+        await conf.getAlive();
+        _processing = false;
+        if (Configuration.login)
+        {
+            await conf.getHsmodCfg();
+            await conf.getSkinsData();
+        }
+        StateHasChanged();
+    }
+    
+    private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+    {
+        InvokeAsync(() => StateHasChanged()); // 触发组件重新渲染
+    }
+    
+
+
+}

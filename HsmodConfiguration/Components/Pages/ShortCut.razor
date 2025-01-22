@@ -1,0 +1,111 @@
+﻿@page "/shortcut"
+@inject Configuration conf
+@using System.Text.RegularExpressions;
+@using System.Timers;
+
+<PageTitle>快捷按键</PageTitle>
+
+
+<MudStack Row="true" Wrap="Wrap.Wrap" Justify="Justify.SpaceEvenly">
+	@if (conf.hsmodcfg != null)
+	{
+		foreach (List<string> card in _List)
+		{
+			<MudPaper Class="pa-3 ma-2" Elevation="3">
+				@foreach (string item in card)
+				{
+					var cfg = conf.hsmodcfg[item];
+					if (cfg.type == typeof(string))
+					{
+						<MudField Label="@cfg.key" HelperText="@cfg.ps" Variant="Variant.Outlined">
+							<MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Dark" onclick="@(()=>{listeningItem = cfg.key;keyCombination=cfg.stringValue;StartListening();})" onkeydown="@HandleKeyDown" />
+							@cfg.stringValue</MudField>
+					}
+				}
+			</MudPaper>
+		}
+	}
+</MudStack>
+<MudOverlay Visible="visible" DarkBackground="true" >
+	<MudPaper Class="pa-16 ma-2" Elevation="3" >
+		<MudText Typo="Typo.h5"  Align="Align.Center"><b>@keyCombination</b></MudText>
+		<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(e => {ToggleOverlay(false);conf.hsmodcfg[listeningItem].stringValue = keyCombination;})">确定</MudButton>
+		<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(e => {ToggleOverlay(false);StopListening();})">取消</MudButton>
+	</MudPaper>
+
+</MudOverlay>
+
+
+@code {
+	private List<List<string>> _List = [["齿轮倍率+1", "齿轮倍率-1", "齿轮倍率归零", "齿轮倍率最大", "模拟拔线"], ["复制对手战网标签", "复制所选对手战网标签", "投降", "结束回合", "沉默对手"], ["静音/恢复音量", "闭了，鲍勃", "一键全额分解", "朕，已阅！", "显示/隐藏帧率"], ["问候", "称赞", "感谢", "惊叹", "失误", "威胁"]];
+
+	private string keyCombination = "";
+	private string listeningItem = "";
+	private bool isListening = false;
+	private bool visible;
+
+	public void ToggleOverlay(bool value)
+	{
+		visible = value;
+	}
+	private void StartListening()
+	{
+		ToggleOverlay(true);
+		isListening = true;
+	}
+
+	private void StopListening()
+	{
+		isListening = false;
+
+		InvokeAsync(async () =>
+		{
+			StateHasChanged();
+		});
+	}
+
+	private void HandleKeyDown(KeyboardEventArgs e)
+	{
+		if (!isListening) return; // Only handle keys if we are listening
+
+		// Record the last pressed key
+		if (e.Key != "Control" & e.Key != "Shift" & e.Key != "Alt")
+		{
+			keyCombination = Regex.Replace(e.Key, @"\b[a-z]\b", match => match.Value.ToUpper());
+			switch (keyCombination)
+			{
+				case "ArrowUp":
+					keyCombination = "UpArrow";
+					break;
+				case "ArrowLeft":
+					keyCombination = "LeftArrow";
+					break;
+				case "ArrowRight":
+					keyCombination = "RightArrow";
+					break;
+				case "ArrowDown":
+					keyCombination = "DownArrow";
+					break;
+			}
+			if (int.TryParse(keyCombination, out int number))
+			{
+				keyCombination = "Alpha" + keyCombination;
+			}
+		}
+		else
+		{
+			keyCombination = "";
+		}
+
+
+		// Build the key combination string
+
+
+		if (e.CtrlKey) keyCombination += " + LeftControl";
+		if (e.ShiftKey) keyCombination += " + Shift";
+		if (e.AltKey) keyCombination += " + Alt";
+
+
+
+	}
+}

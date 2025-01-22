@@ -1,0 +1,52 @@
+﻿@page "/skin"
+@inject Configuration conf
+
+
+<PageTitle>皮肤设置</PageTitle>
+
+<MudStack Row="true" Wrap="Wrap.Wrap" Justify="Justify.SpaceEvenly">
+    @if (conf.hsmodcfg != null & Configuration.skins != null)
+    {
+        foreach (string item in _List)
+        {
+            var cfg = conf.hsmodcfg[item];
+            <MudPaper Class="pa-3 ma-2" Elevation="3">
+                <MudAutocomplete @bind-Value="cfg.tranValue"
+                SearchFunc="_SearchFuncs[item]"
+                Variant="Variant.Outlined"
+                Label="@cfg.key"
+                HelperText="@cfg.ps"
+                Clearable="true"></MudAutocomplete>
+            </MudPaper>
+        }
+    }
+
+</MudStack>
+
+
+@code {
+    private List<string> _List = ["硬币", "卡背", "对战面板", "酒馆战斗面板", "酒馆击杀特效", "鲍勃"];
+    private Dictionary<string, Func<string, CancellationToken, Task<IEnumerable<string>>>> _SearchFuncs = new Dictionary<string, Func<string, CancellationToken, Task<IEnumerable<string>>>>();
+    async protected override void OnInitialized()
+    {
+        if (Configuration.skins != null)
+        {
+            foreach (string kind in _List)
+            {
+                _SearchFuncs.Add(kind, async Task<IEnumerable<string>> (string value, CancellationToken token) =>
+            {
+                await Task.Delay(5, token);
+                var list = Configuration.skins[kind].Values.ToList();
+                // if text is null or empty, show complete list
+                if (string.IsNullOrEmpty(value))
+                    return list;
+
+                return list.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+            });
+            }
+        }
+        
+        
+    }
+    
+}
