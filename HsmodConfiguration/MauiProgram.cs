@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
-using System.Net.Http;
-using System.Text.RegularExpressions;
 namespace HsmodConfiguration
 {
     public static class MauiProgram

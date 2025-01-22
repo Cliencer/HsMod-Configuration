@@ -2,52 +2,81 @@
 
 @inject Configuration conf
 @using System.Timers
+@inject IDialogService DialogService
 <PageTitle>常规设置</PageTitle>
 
 <MudStack Row="true" Wrap="Wrap.Wrap" Justify="Justify.SpaceEvenly">
-    <MudPaper Class="pa-3 ma-2" Elevation="3">
-        <MudPaper Class="pa-2 ma-1">
-            <MudTextField @bind-Value="conf.url" Label="Url地址" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-            <MudTextField @bind-Value="conf.port" Label="端口" Variant="Variant.Outlined" Margin="Margin.Dense"></MudTextField>
-        </MudPaper>
+    <MudPaper Class=" pa-3 ma-2 align-center" Elevation="3">
+        <div style="display: flex;justify-content: center;align-items: center;flex-wrap: wrap;">
+
+            <MudTextField Class="ma-2" @bind-Value="Configuration.url" Label="Url地址" Variant="Variant.Outlined" Margin="Margin.Dense" />
+            <MudTextField Class="ma-2" @bind-Value="Configuration.port" Label="端口" Variant="Variant.Outlined" Margin="Margin.Dense" />
 
 
-        @if (_processing)
-        {
-            <MudButton Disabled="@_processing" OnClick="relink" Variant="Variant.Filled" Color="Color.Primary">
-                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                <MudText Class="ms-2">正在连接服务器</MudText>
-            </MudButton>
-        }
-        else 
-        {
-            if (Configuration.login)
+            @if (_processing)
             {
-                <MudStack Row="true" Wrap="Wrap.Wrap">
-                    <MudButton Disabled="@_processing" OnClick="relink" Variant="Variant.Filled" Color="Color.Success">
-                        <MudText>已连接插件</MudText>
-                    </MudButton>
-                    <MudPaper Class="pa-3">PID: @conf.pid</MudPaper>
-                </MudStack>
-            }
-            else
-            {
-                <MudButton Disabled="@_processing" OnClick="relink" Variant="Variant.Filled" Color="Color.Error">
-                    <MudText>失败请重连</MudText>
+                <MudButton Class="ma-2"  Disabled="@_processing" OnClick="relink" Variant="Variant.Filled" Color="Color.Primary">
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                    <MudText >正在连接服务器</MudText>
                 </MudButton>
             }
-
-        }
-
+            else 
+            {
+                if (Configuration.login)
+                {
+                    <MudButton Class="ma-2 display: inline-block" Disabled="@_processing" OnClick="relink" Variant="Variant.Filled" Color="Color.Success">
+                        <MudText>已连接插件</MudText>
+                    </MudButton>
+                    <MudPaper Class="ma-2 pa-2">PID: @Configuration.pid</MudPaper>
+                }
+                else
+                {
+                    <MudButton Class="ma-2" Disabled="@_processing" OnClick="relink" Variant="Variant.Filled" Color="Color.Error">
+                        <MudText>失败请重连</MudText>
+                    </MudButton>
+                }
+            }
+        </div>
     </MudPaper>
-    @if (conf.hsmodcfg != null)
+    <MudPaper Class="pa-3 ma-2 align-center" Elevation="3" >
+        <div style="display: flex;justify-content: center;align-items: center;flex-wrap: wrap;">
+            <MudTextField Class="ma-2" Disabled="true" @bind-Value="Configuration.GamePath" Label="《炉石传说》安装路径" Variant="Variant.Outlined" />
+            <MudButton Class="ma-2" OnClick="pickFile" Variant="Variant.Filled" Color="Color.Info">
+                <MudText>手动选择路径</MudText>
+            </MudButton>
+            @if(_Downloading){
+                <MudProgressLinear Color="Color.Info" Size="Size.Large" Value="@((int)(_DownloadValue+GitHub.Downloadprogress*0.7))" Class="my-7">
+                    <MudText Typo="Typo.subtitle1" Color="Color.Dark">
+                        <b>@_DownloadText</b>
+                    </MudText>
+                </MudProgressLinear>
+            }else{
+                if(Configuration.GamePath==""|| _processing || Configuration.login){
+                    <MudTooltip Text="未获取到游戏路径或游戏未关闭" Arrow="true">
+                        <MudButton Disabled="true" Class="ma-2" OnClick="Download" Variant="Variant.Filled" Color="Color.Success">
+
+                            <MudText>安装HsMod插件</MudText>
+                        </MudButton>    
+                    </MudTooltip>
+                }else{
+                    <MudTooltip Text="安装前请确认游戏已关闭" Arrow="true">
+                        <MudButton Class="ma-2" OnClick="Download" Variant="Variant.Filled" Color="Color.Success">
+                            <MudText>安装HsMod插件</MudText>
+                        </MudButton> 
+                    </MudTooltip>
+                }
+            }
+
+        </div>
+    </MudPaper>
+    @if (Configuration.hsmodcfg.Count>0)
     {
         foreach (List<string> card in _List)
         {
             <MudPaper Class="pa-3 ma-2" Elevation="3">
                 @foreach (string item in card)
                 {
-                    var cfg = conf.hsmodcfg[item];
+                    var cfg = Configuration.hsmodcfg[item];
                     if (cfg.type == typeof(int))
                     {
                         if (cfg.acceptableRange != null & cfg.acceptableRange.Count == 2)
@@ -92,26 +121,80 @@
 
 
 @code {
+
+
+    private bool _Downloading = false;
     private bool _processing = false;
+    private int _DownloadValue = 0;
+    private string _DownloadText = "下载中";
     private List<List<string>> _List = [["快捷键状态","变速齿轮状态", "显示FPS", "游戏帧率", "变速倍率", "开包加速", "快速战斗"], ["自动开包", "自动分解", "自动开盒", "自动举报", "自动领奖"], ["允许掉线", "游戏内消息", "结算展示", "弹出消息", "报错退出", "弹出响应"], ["收藏卡牌数量", "显示卡牌ID", "自动置换卡牌", "显示放弃"]];
     private Timer timer = new Timer(1000);
     async protected override void OnInitialized()
     {
+        if (Configuration.firstOpen){
+
+            await Configuration.getGamePath();
+            await relink();
+        }
         timer.Elapsed += Timer_Elapsed;
         timer.Start();
+    }
+    async Task Download(){
+        try{
+            GitHub.Downloadprogress = 0;
+            _Downloading = true;
+            _DownloadText = "清理安装目录";
+            string fromDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Addins");
+            string toDir = System.IO.Path.GetDirectoryName(Configuration.GamePath);
+            await FileIO.DeleteDirectory($@"{toDir}\BepInEx");
+            _DownloadValue = 10;
+            _DownloadText = "复制BepInEx";
+            await FileIO.CopyDirectory(fromDir, toDir);
+            await FileIO.CreateDirectory($@"{toDir}\BepInEx\plugins");
+            _DownloadValue = 20;
+            _DownloadText = "下载最新版本HsMod";
+            string DownloadUrl = await GitHub.GetLatestReleaseDownloadUrl("Pik-4", "HsMod");
+            _DownloadValue = 30;
+            await GitHub.DownloadFileWithProgressAsync(DownloadUrl, $@"{toDir}\BepInEx\plugins\HsMod.dll");
+            _DownloadText = "HsMod安装完成，请运行游戏后点击重连";
+            await Task.Delay(5000);
+            
+        }catch(Exception e){
+            Console.WriteLine(e.Message);
+            var parameters = new DialogParameters<HsmodConfiguration.Components.Dialog.Onlysubmit>
+        {
+            { x => x.ContentText, e.Message },
+            { x => x.ButtonText, "好的" },
+            { x => x.Color, Color.Error }
+        };
+
+            var options = new DialogOptions() { CloseButton = false, MaxWidth = MaxWidth.ExtraSmall };
+
+            await DialogService.ShowAsync<HsmodConfiguration.Components.Dialog.Onlysubmit>("出错了", parameters, options);
+          
+        }
+        _Downloading = false;
+        _DownloadValue = 0;
+    }
+    async Task pickFile(){
+
+        await Configuration.PickFileAsync();
+        StateHasChanged();
     }
     async Task relink()
     {
         _processing = true;
 
         await Task.Delay(1000);
-        await conf.getAlive();
+        await Configuration.getAlive();
         _processing = false;
         if (Configuration.login)
         {
-            await conf.getHsmodCfg();
-            await conf.getSkinsData();
+            await Configuration.getHsmodCfg();
+            await Configuration.getSkinsData();
         }
+
+        Configuration.firstOpen = false;
         StateHasChanged();
     }
     
@@ -120,6 +203,5 @@
         InvokeAsync(() => StateHasChanged()); // 触发组件重新渲染
     }
     
-
 
 }

@@ -12,13 +12,13 @@
         <MudText Typo="Typo.h5" Class="ml-3">HsMod 插件管理器</MudText>
         <MudSpacer />
         <MudTooltip Text="刷新设置" Arrow="true">
-            <MudIconButton Icon="@Icons.Material.Outlined.Refresh" Color="Color.Inherit" OnClick="@refresh" />
+            <MudIconButton Disabled="@(!Configuration.login)" Icon="@Icons.Material.Outlined.Refresh" Color="Color.Inherit" OnClick="@refresh" />
         </MudTooltip>
         <MudTooltip Text="保存设置" Arrow="true">
-            <MudIconButton Icon="@(Icons.Material.Outlined.Save)" Color="Color.Inherit" OnClick="@Save"/>
+            <MudIconButton Disabled="@(!Configuration.login)" Icon="@(Icons.Material.Outlined.Save)" Color="Color.Inherit" OnClick="@Save"/>
         </MudTooltip>
         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Edge="Edge.End" />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Edge="Edge.End" OnClick="@GoGithub" />
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu />
@@ -37,10 +37,11 @@
 </div>
 
 @code {
+
     private bool _drawerOpen = true;
     private bool _isDarkMode = false;
     private MudTheme? _theme = null;
-
+    private Timer timer = new Timer(3000);
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -51,24 +52,28 @@
                 PaletteDark = _darkPalette,
                 LayoutProperties = new LayoutProperties()
             };
-        InvokeAsync(refresh);
+        timer.Elapsed += Timer_Elapsed;
+        timer.Start();
     }
 
     async public Task refresh()
     {
-        await conf.getAlive();
-
+        await Configuration.getGamePath();
+        await Configuration.getAlive();
+        
         if (Configuration.login)
         {
-            await conf.getHsmodCfg();
-            await conf.getSkinsData();
+            await Configuration.getHsmodCfg();
+            await Configuration.getSkinsData();
+
+            
         }
         StateHasChanged(); // 触发组件重新渲染
     }
  
     async private void Save()
     {
-        await conf.save();
+        await Configuration.save();
         Snackbar.Clear();
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
         var a = Snackbar.Add("保存成功", Severity.Success, config =>
@@ -89,7 +94,17 @@
     {
         _isDarkMode = !_isDarkMode;
     }
-
+    private async Task GoGithub(){
+        try
+        {
+            Uri uri = new Uri("https://github.com/Cliencer/HsMod-Configuration");
+            await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
+        }
+        catch (Exception ex)
+        {
+            // An unexpected error occurred. No browser may be installed on the device.
+        }
+    }
     private readonly PaletteLight _lightPalette = new()
         {
             Black = "#110e2d",
@@ -134,6 +149,18 @@
         true => Icons.Material.Outlined.LightMode,
         false => Icons.Material.Outlined.DarkMode,
     };
+    private void Timer_Elapsed(object sender, ElapsedEventArgs e)
+    {
+        if (Configuration.login)
+        {
+            InvokeAsync(async() =>{
+            
+                await Configuration.getAlive();
+                StateHasChanged();
+            
+        });
+        }
+    }
 }
 
 

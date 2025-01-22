@@ -14,22 +14,28 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Threading.Channels;
 using Microsoft.AspNetCore.Components;
 using static MudBlazor.CategoryTypes;
+using Microsoft.Win32;
+using Windows.Gaming.Input;
+using MudBlazor;
 namespace HsmodConfiguration.Components
 {
     public class Configuration
-    {
-        private HttpClient Http = new HttpClient();
+    {   
+        public static bool firstOpen = true;
+        private static HttpClient Http = new HttpClient();
         private static readonly Regex ConfigRegex = new Regex(@"^\s*(?<key>[^=\s]+)\s*=\s*(?<value>.*)\s*$", RegexOptions.Compiled | RegexOptions.Multiline);
         private static readonly Regex MetadataRegex = new Regex(@"^##?\s*(.*)$", RegexOptions.Compiled | RegexOptions.Multiline);
-        public string url = "localhost";
-        public string port = "58744";
-        public int pid;
+        public static string url = "localhost";
+        public static string port = "58744";
+        public static int pid;
         public static bool login;
-        public Dictionary<string, CfgData>? hsmodcfg;
+        public static Dictionary<string, CfgData>?hsmodcfg = new Dictionary<string, CfgData>();
         public static Dictionary<string,Dictionary<string, string>>? skins = new Dictionary<string, Dictionary<string, string>>();
         public static bool isSkinsLoad = false;
         public static bool changed = false;
-        public async Task getAlive()
+        public static string GamePath = "";
+        public static bool isInstalled = true;
+        public static async Task getAlive()
         {
 
             try
@@ -63,7 +69,68 @@ namespace HsmodConfiguration.Components
                 pid = 0;
             }
         }
-        public async Task save()
+        public static async Task PickFileAsync()
+        {
+            var customFileType = new FilePickerFileType(
+    new Dictionary<DevicePlatform, IEnumerable<string>>
+    {
+        { DevicePlatform.WinUI, new[] { ".exe" } }, // Windows 平台限制为 .exe 文件
+        { DevicePlatform.iOS, new[] { "public.executable" } }, // iOS 平台
+        { DevicePlatform.Android, new[] { "application/x-ms-dos-executable" } }, // Android 平台
+        { DevicePlatform.macOS, new[] { "public.executable" } }, // macOS 平台
+        { DevicePlatform.Tizen, new[] { "*/*" } } // Tizen 平台（通用类型）
+    });
+            var options = new PickOptions
+            {
+                PickerTitle = "请选择 Hearthstone.exe",
+                FileTypes = customFileType
+            };
+
+            try
+            {
+                var result = await FilePicker.Default.PickAsync(options);
+                if (result != null)
+                {
+                    if (result.FileName== "Hearthstone.exe")
+                    {
+                        GamePath = result.FullPath;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // 处理异常
+            }
+        }
+
+        
+        public static async Task getGamePath()
+        {
+            try
+            {
+                using (RegistryKey baseKey = Registry.LocalMachine)
+                {
+                    using (RegistryKey subKey = baseKey.OpenSubKey(@"SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Hearthstone"))
+                    {
+                        if (subKey != null)
+                        {
+                            var saveSubkeyNames = subKey.GetSubKeyNames();
+                            object path = subKey.GetValue("DisplayIcon"); // 获取默认值
+                            if (path is string && path.ToString().EndsWith("Hearthstone.exe"))
+                            {
+                                GamePath = path.ToString();
+                            }
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"扫描注册表失败: {ex.Message}");
+            }
+        }
+        public static async Task save()
         {
             try
             {
@@ -94,7 +161,7 @@ namespace HsmodConfiguration.Components
                 Console.WriteLine($"Request error: {e.Message}");
             }
         }
-        public async Task getSkinsData()
+        public static async Task getSkinsData()
         {
             try
             {
@@ -178,7 +245,7 @@ namespace HsmodConfiguration.Components
             }
             catch(Exception e){ Console.WriteLine(e); }
         }
-        public async Task getHsmodCfg()
+        public static async Task getHsmodCfg()
         {
 
             try

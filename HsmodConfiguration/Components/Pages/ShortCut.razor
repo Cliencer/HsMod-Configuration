@@ -7,14 +7,14 @@
 
 
 <MudStack Row="true" Wrap="Wrap.Wrap" Justify="Justify.SpaceEvenly">
-	@if (conf.hsmodcfg != null)
+	@if (Configuration.hsmodcfg.Count > 0)
 	{
 		foreach (List<string> card in _List)
 		{
 			<MudPaper Class="pa-3 ma-2" Elevation="3">
 				@foreach (string item in card)
 				{
-					var cfg = conf.hsmodcfg[item];
+					var cfg = Configuration.hsmodcfg[item];
 					if (cfg.type == typeof(string))
 					{
 						<MudField Label="@cfg.key" HelperText="@cfg.ps" Variant="Variant.Outlined">
@@ -29,7 +29,7 @@
 <MudOverlay Visible="visible" DarkBackground="true" >
 	<MudPaper Class="pa-16 ma-2" Elevation="3" >
 		<MudText Typo="Typo.h5"  Align="Align.Center"><b>@keyCombination</b></MudText>
-		<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(e => {ToggleOverlay(false);conf.hsmodcfg[listeningItem].stringValue = keyCombination;})">确定</MudButton>
+		<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(e => {ToggleOverlay(false);Configuration.hsmodcfg[listeningItem].stringValue = keyCombination;})">确定</MudButton>
 		<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(e => {ToggleOverlay(false);StopListening();})">取消</MudButton>
 	</MudPaper>
 
