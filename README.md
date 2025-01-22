@@ -1,4 +1,4 @@
-# ![icon](/HsmodConfiguration/Resources/AppIcon/appicon.png)Hsmod 配置管理器
+## <img src="./HsmodConfiguration/Resources/AppIcon/appicon.png" width = "50" height = "50"/>Hsmod 配置管理器
 本项目用于[HsMod](https://github.com/Pik-4/HsMod)插件配置管理。
 ### 界面
 ![Home](/img/Home.png)
