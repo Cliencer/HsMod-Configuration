@@ -1,26 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.Win32;
+using System.Diagnostics;
 using System.Text;
-using System.Threading.Tasks;
 using System.Text.Json;
-using System.Xml.Linq;
 using System.Text.RegularExpressions;
-using static MudBlazor.Colors;
-using Microsoft.Maui.Controls.Shapes;
-using System.Globalization;
-using Microsoft.Extensions.Primitives;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Threading.Channels;
-using Microsoft.AspNetCore.Components;
-using static MudBlazor.CategoryTypes;
-using Microsoft.Win32;
-using Windows.Gaming.Input;
-using MudBlazor;
 namespace HsmodConfiguration.Components
 {
     public class Configuration
-    {   
+    {
         public static bool firstOpen = true;
         private static HttpClient Http = new HttpClient();
         private static readonly Regex ConfigRegex = new Regex(@"^\s*(?<key>[^=\s]+)\s*=\s*(?<value>.*)\s*$", RegexOptions.Compiled | RegexOptions.Multiline);
@@ -29,11 +15,12 @@ namespace HsmodConfiguration.Components
         public static string port = "58744";
         public static int pid;
         public static bool login;
-        public static Dictionary<string, CfgData>?hsmodcfg = new Dictionary<string, CfgData>();
-        public static Dictionary<string,Dictionary<string, string>>? skins = new Dictionary<string, Dictionary<string, string>>();
+        public static Dictionary<string, CfgData>? hsmodcfg = new Dictionary<string, CfgData>();
+        public static Dictionary<string, Dictionary<string, string>>? skins = new Dictionary<string, Dictionary<string, string>>();
         public static bool isSkinsLoad = false;
         public static bool changed = false;
         public static string GamePath = "";
+        public static string? pluginVersion = null;
         public static bool isInstalled = true;
         public static async Task getAlive()
         {
@@ -91,7 +78,7 @@ namespace HsmodConfiguration.Components
                 var result = await FilePicker.Default.PickAsync(options);
                 if (result != null)
                 {
-                    if (result.FileName== "Hearthstone.exe")
+                    if (result.FileName == "Hearthstone.exe")
                     {
                         GamePath = result.FullPath;
                     }
@@ -103,7 +90,26 @@ namespace HsmodConfiguration.Components
             }
         }
 
-        
+        public static async Task getPluginVersion()
+        {
+            try
+            {
+                if (GamePath != "" & File.Exists(GamePath))
+                {
+                    string dllDir = $@"{System.IO.Path.GetDirectoryName(GamePath)}\BepInEx\plugins\HsMod.dll";
+                    if (File.Exists(dllDir))
+                    {
+                        pluginVersion = FileVersionInfo.GetVersionInfo(dllDir).FileVersion ?? "Unknown";
+                    }
+                    else
+                    {
+                        pluginVersion = null;
+                    }
+
+                }
+            }
+            catch (Exception ex) { }
+        }
         public static async Task getGamePath()
         {
             try
@@ -136,10 +142,10 @@ namespace HsmodConfiguration.Components
             {
                 if (hsmodcfg == null) { return; }
                 foreach (CfgData val in hsmodcfg.Values)
-            {
-                if (val.changed)
                 {
-                    
+                    if (val.changed)
+                    {
+
                         var requestData = new RequestData
                         {
                             key = val.key,
@@ -152,12 +158,13 @@ namespace HsmodConfiguration.Components
                         response.EnsureSuccessStatusCode();
                         string responseBody = await response.Content.ReadAsStringAsync();
                         Console.WriteLine(responseBody);
-                    
-                    
+
+
+                    }
                 }
             }
-            }catch (Exception e)
-                    {
+            catch (Exception e)
+            {
                 Console.WriteLine($"Request error: {e.Message}");
             }
         }
@@ -171,7 +178,7 @@ namespace HsmodConfiguration.Components
                 response.EnsureSuccessStatusCode();
                 string Response = await response.Content.ReadAsStringAsync();
                 string[] lines = Response.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-                if(lines.Length == 0)
+                if (lines.Length == 0)
                 {
                     Configuration.isSkinsLoad = false;
                 }
@@ -180,16 +187,17 @@ namespace HsmodConfiguration.Components
                     Configuration.isSkinsLoad = true;
                 }
                 List<string> kindlist = ["硬币", "卡背", "对战面板", "酒馆战斗面板", "酒馆击杀特效", "鲍勃"];
-                foreach(string k in kindlist)
+                foreach (string k in kindlist)
                 {
                     skins.Add(k, new Dictionary<string, string>());
                     skins[k].Add("-1", "不做修改");
                 }
-                string kind="";
+                string kind = "";
                 foreach (string line in lines)
                 {
-                    if(line.StartsWith("#")){
-                       switch (ExtractTextBetween(line,"获取到", "如下："))
+                    if (line.StartsWith("#"))
+                    {
+                        switch (ExtractTextBetween(line, "获取到", "如下："))
                         {
                             case "硬币皮肤":
                                 kind = "硬币";
@@ -212,7 +220,7 @@ namespace HsmodConfiguration.Components
                         }
                         continue;
                     }
-                    if(kind == "皮肤")
+                    if (kind == "皮肤")
                     {
                         var word = line.Split("\t");
                         var skinkind = "";
@@ -249,7 +257,7 @@ namespace HsmodConfiguration.Components
                     }
                 }
             }
-            catch(Exception e){ Console.WriteLine(e); }
+            catch (Exception e) { Console.WriteLine(e); }
         }
         public static async Task getHsmodCfg()
         {
@@ -410,8 +418,8 @@ namespace HsmodConfiguration.Components
         }
         public string tranValue
         {
-            get 
-            { 
+            get
+            {
                 return Configuration.skins[this.key][this.value];
             }
             set

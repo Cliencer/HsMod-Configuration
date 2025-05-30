@@ -1,25 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using System.Text.Json;
 namespace HsmodConfiguration.Components
 {
     public class GitHub
     {
         public static int Downloadprogress = 0;
-        public static async Task<string> GetLatestReleaseDownloadUrl(string repositoryOwner, string repositoryName)
+        public static async Task<(string url, string version)> GetLatestReleaseDownloadUrl(string repositoryOwner, string repositoryName)
         {
             using (HttpClient client = new HttpClient())
             {
                 string apiUrl = $"http://api.github.com/repos/{repositoryOwner}/{repositoryName}/releases/latest";
+                client.DefaultRequestHeaders.Add("User-Agent", "Other");
                 HttpResponseMessage response = await client.GetAsync(apiUrl);
                 if (!response.IsSuccessStatusCode)
                 {
-                    return "https://github.com/Pik-4/HsMod/releases/download/7.1.3.0/HsMod.dll";
-                    //throw new Exception("网络错误，无法获取Github资源，请手动前往HsMod网址下载并复制插件到安装目录下BepInEx\\plugins文件夹。");
+                    //return "https://github.com/Pik-4/HsMod/releases/download/7.1.3.0/HsMod.dll";
+                    throw new Exception("网络错误，无法获取Github资源，请手动下载HsMod.dll并复制插件到游戏安装目录下BepInEx\\plugins文件夹。");
                 }
 
                 string jsonResponse = await response.Content.ReadAsStringAsync();
@@ -28,17 +23,17 @@ namespace HsmodConfiguration.Components
                 // 获取最新版本的下载链接
                 JsonElement root = document.RootElement;
                 JsonElement assets = root.GetProperty("assets");
-
+                string version = root.GetProperty("name").GetString();
                 foreach (JsonElement asset in assets.EnumerateArray())
                 {
                     string browserDownloadUrl = asset.GetProperty("browser_download_url").GetString();
                     if (browserDownloadUrl != null)
                     {
-                        return browserDownloadUrl;
+                        return (browserDownloadUrl, version);
                     }
                 }
             }
-            return null;
+            return ("", "");
         }
         public static async Task DownloadFileWithProgressAsync(string fileUrl, string savePath)
         {
