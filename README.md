@@ -5,7 +5,7 @@
 ![Home](/img/battle.png)
 ![Home](/img/skin.png)
 ### 使用方法
-先手动安装[HsMod](https://github.com/Pik-4/HsMod)插件，启动游戏正常后再打开 **Hsmod配置管理器**。
+第一次运行时，可以使用**Hsmod配置管理器**自动安装[HsMod](https://github.com/Pik-4/HsMod)插件（会自动从github拉取最新Release）。启动游戏正常后点击重连按钮，会连接至插件内置本地服务器进行管理。
 ### 引用
 1. [HsMod Web Api](https://github.com/Pik-4/HsMod/discussions/122)
 2. [Blazor Template](https://github.com/MudBlazor/Templates)
