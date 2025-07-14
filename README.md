@@ -1,4 +1,6 @@
 ## <img src="./HsmodConfiguration/Resources/AppIcon/appicon.png" width = "50" height = "50"/>Hsmod 配置管理器
+![GitHub Downloads (all assets, all releases)](https://img.shields.io/github/downloads/Cliencer/HsMod-Configuration/total?style=for-the-badge&label=Github%20Download)
+
 本项目用于[HsMod](https://github.com/Pik-4/HsMod)插件配置管理。
 ### 界面
 ![Home](/img/Home.png)
