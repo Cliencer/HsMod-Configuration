@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HsmodConfiguration", "HsmodConfiguration\HsmodConfiguration.csproj", "{50370EDA-B356-4FE8-9272-1125747D03DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HsmodConfiguration", "HsmodConfiguration\HsmodConfiguration.csproj", "{50370EDA-B356-4FE8-9272-1125747D03DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,5 +20,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {98AC37A4-DBFB-40AD-A1EA-305006FA18AE}
 	EndGlobalSection
 EndGlobal

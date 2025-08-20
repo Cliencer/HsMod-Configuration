@@ -18,7 +18,7 @@
 					if (cfg.type == typeof(string))
 					{
 						<MudField Label="@cfg.key" HelperText="@cfg.ps" Variant="Variant.Outlined">
-							<MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Dark" onclick="@(()=>{listeningItem = cfg.key;keyCombination=cfg.stringValue;StartListening();})" onkeydown="@HandleKeyDown" />
+							<MudIconButton Icon="@Icons.Material.Outlined.Edit" Color="Color.Dark" OnClick="@(() => {listeningItem = cfg.key;keyCombination = cfg.stringValue;StartListening();})" onkeydown="@HandleKeyDown" />
 							@cfg.stringValue</MudField>
 					}
 				}
@@ -44,10 +44,13 @@
 	private bool isListening = false;
 	private bool visible;
 
+
 	public void ToggleOverlay(bool value)
 	{
 		visible = value;
 	}
+
+
 	private void StartListening()
 	{
 		ToggleOverlay(true);

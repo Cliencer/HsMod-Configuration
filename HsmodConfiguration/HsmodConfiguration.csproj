@@ -20,7 +20,7 @@
         <SingleProject>true</SingleProject>
         <ImplicitUsings>enable</ImplicitUsings>
         <EnableDefaultCssItems>false</EnableDefaultCssItems>
-        <Nullable>enable</Nullable>
+        <Nullable>warnings</Nullable>
         <!-- Display name -->
         <ApplicationTitle>HsmodConfiguration</ApplicationTitle>
 
@@ -28,8 +28,8 @@
         <ApplicationId>com.cliencer.hsmodconfiguration</ApplicationId>
 
         <!-- Versions -->
-        <ApplicationDisplayVersion>1.0.1</ApplicationDisplayVersion>
-        <ApplicationVersion>2</ApplicationVersion>
+        <ApplicationDisplayVersion>1.0.3</ApplicationDisplayVersion>
+        <ApplicationVersion>4</ApplicationVersion>
 
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
@@ -38,33 +38,35 @@
         <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'tizen'">6.5</SupportedOSPlatformVersion>
         <WindowsPackageType>None</WindowsPackageType>
+        <Platforms>AnyCPU</Platforms>
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <PublishAot>False</PublishAot>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-maccatalyst|AnyCPU'">
       <ApplicationTitle>HsmodConfiguration</ApplicationTitle>
       <ApplicationId>com.cliencer.hsmodconfiguration</ApplicationId>
-      <ApplicationDisplayVersion>1.0.1</ApplicationDisplayVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-windows10.0.19041.0|AnyCPU'">
       <ApplicationTitle>HsmodConfiguration</ApplicationTitle>
       <ApplicationId>com.cliencer.hsmodconfiguration</ApplicationId>
-      <ApplicationDisplayVersion>1.0.1</ApplicationDisplayVersion>
       <DebugType>full</DebugType>
+      <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-maccatalyst|AnyCPU'">
       <ApplicationTitle>HsmodConfiguration</ApplicationTitle>
       <ApplicationId>com.cliencer.hsmodconfiguration</ApplicationId>
-      <ApplicationDisplayVersion>1.0.1</ApplicationDisplayVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-windows10.0.19041.0|AnyCPU'">
-      <ApplicationTitle>HsmodConfiguration</ApplicationTitle>
-      <ApplicationId>com.cliencer.hsmodconfiguration</ApplicationId>
-      <ApplicationDisplayVersion>1.0.1</ApplicationDisplayVersion>
-      <DebugType>full</DebugType>
-    </PropertyGroup>
+        <ApplicationTitle>HsmodConfiguration</ApplicationTitle>
+        <ApplicationId>com.cliencer.hsmodconfiguration</ApplicationId>
+
+		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+		<DebugType>none</DebugType>
+	</PropertyGroup>
 
     <ItemGroup>
         <!-- App Icon -->
