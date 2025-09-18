@@ -9,12 +9,16 @@ namespace HsmodConfiguration.Components
             using (HttpClient client = new HttpClient())
             {
                 string apiUrl = $"http://api.github.com/repos/{repositoryOwner}/{repositoryName}/releases/latest";
-                client.DefaultRequestHeaders.Add("User-Agent", "Other");
+                string myApiUrl = $"http://api.github.com/repos/cliencer/{repositoryName}/releases/latest";
+				client.DefaultRequestHeaders.Add("User-Agent", "Other");
                 HttpResponseMessage response = await client.GetAsync(apiUrl);
                 if (!response.IsSuccessStatusCode)
                 {
-                    //return "https://github.com/Pik-4/HsMod/releases/download/7.1.3.0/HsMod.dll";
-                    throw new Exception("网络错误，无法获取Github资源，请手动下载HsMod.dll并复制插件到游戏安装目录下BepInEx\\plugins文件夹。");
+					response = await client.GetAsync(myApiUrl);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new Exception("网络错误，无法获取Github资源，请手动下载HsMod.dll并复制插件到游戏安装目录下BepInEx\\plugins文件夹。");
+                    }
                 }
 
                 string jsonResponse = await response.Content.ReadAsStringAsync();
