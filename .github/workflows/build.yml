@@ -26,17 +26,15 @@ jobs:
         }
     
     - name: .NET MAUI Build
-      uses: akiojin/maui-build-github-action@v0.1.19
+      uses: akiojin/maui-build-github-action@v1.0.5
       with:
         build-target: Windows
         configuration: Release
-        framework: net8.0
         project: ./HsmodConfiguration/HsmodConfiguration.csproj
         output: ./published
         display-version: ${{ steps.tag.outputs.VERSION }}
         version: ${{ steps.tag.outputs.VERSION }}
-        clean: true
-        verbosity: normal
+        
     
     - name: Create ZIP package (if needed)
       run: Compress-Archive -Path ./published/* -DestinationPath ./HsModConfiguration.zip
