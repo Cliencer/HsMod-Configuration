@@ -26,7 +26,7 @@ jobs:
         }
     
     - name: .NET MAUI Build
-      run:  dotnet publish ./HsmodConfiguration/HsmodConfiguration.csproj  --configuration Release --verbosity normal --framework net8.0-windows10.0.19041.0 -p:ArchiveOnBuild=true -p:ApplicationDisplayVersion=1.0.4 -p:ApplicationVersion=1.0.4 --output ./published
+      run:  dotnet publish ./HsmodConfiguration/HsmodConfiguration.csproj  --configuration Release --verbosity normal --framework net8.0-windows10.0.19041.0 -p:ArchiveOnBuild=true --output ./HsMod_Configuration
 
     - name: Clean File
       run:  cd ./published
@@ -38,7 +38,7 @@ jobs:
             del *.ico /q
     
     - name: Create ZIP package (if needed)
-      run: Compress-Archive -Path ./published/* -DestinationPath ./HsModConfiguration.zip
+      run: Compress-Archive -Path ./HsMod_Configuration -DestinationPath ./HsModConfiguration.zip
     
     - name: Create Release
       id: create_release
