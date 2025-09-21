@@ -186,11 +186,15 @@ namespace HsmodConfiguration.Components
                 {
                     Configuration.isSkinsLoad = true;
                 }
-                List<string> kindlist = ["硬币", "卡背", "对战面板", "酒馆战斗面板", "酒馆击杀特效", "鲍勃"];
+                List<string> kindlist = ["硬币", "卡背", "对战面板", "酒馆战斗面板", "酒馆击杀特效", "鲍勃","宠物", "对手宠物"];
                 foreach (string k in kindlist)
                 {
                     skins.Add(k, new Dictionary<string, string>());
                     skins[k].Add("-1", "不做修改");
+                    if (k== "宠物" || k== "对手宠物")
+                    {
+                        skins[k].Add("0", "隐藏");
+                    }
                 }
                 string kind = "";
                 foreach (string line in lines)
@@ -217,6 +221,9 @@ namespace HsmodConfiguration.Components
                             case "英雄皮肤（包括酒馆）":
                                 kind = "皮肤";
                                 break;
+                            case "宠物皮肤":
+                                kind = "宠物";
+                                break;
                         }
                         continue;
                     }
@@ -238,11 +245,20 @@ namespace HsmodConfiguration.Components
                         }
                         if (!skins.ContainsKey(skinkind))
                         {
-                            skins.Add(kind, new Dictionary<string, string>());
-                            skins[kind].Add("-1", "不做修改");
+                            skins.Add(skinkind, new Dictionary<string, string>());
+                            skins[skinkind].Add("-1", "不做修改");
                         }
 
                         skins[skinkind].Add(word[0], word[1]);
+                    }else if(kind == "宠物")
+                    {
+                        var word = line.Split("\t");
+                        string[] kinds = ["宠物", "对手宠物"];
+                        foreach (string k in kinds)
+                        {
+                            skins[k].Add(word[0], word[1]);
+                        }
+                        
                     }
                     else
                     {
