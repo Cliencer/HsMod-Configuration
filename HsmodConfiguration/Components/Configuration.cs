@@ -1,8 +1,8 @@
-﻿using Microsoft.Win32;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using Microsoft.Win32;
 namespace HsmodConfiguration.Components
 {
     public class Configuration
@@ -186,12 +186,12 @@ namespace HsmodConfiguration.Components
                 {
                     Configuration.isSkinsLoad = true;
                 }
-                List<string> kindlist = ["硬币", "卡背", "对战面板", "酒馆战斗面板", "酒馆击杀特效", "鲍勃","宠物", "对手宠物"];
+                List<string> kindlist = ["硬币", "卡背", "对战面板", "酒馆战斗面板", "酒馆击杀特效", "鲍勃", "宠物", "对手宠物"];
                 foreach (string k in kindlist)
                 {
                     skins.Add(k, new Dictionary<string, string>());
                     skins[k].Add("-1", "不做修改");
-                    if (k== "宠物" || k== "对手宠物")
+                    if (k == "宠物" || k == "对手宠物")
                     {
                         skins[k].Add("0", "隐藏");
                     }
@@ -250,7 +250,8 @@ namespace HsmodConfiguration.Components
                         }
 
                         skins[skinkind].Add(word[0], word[1]);
-                    }else if(kind == "宠物")
+                    }
+                    else if (kind == "宠物")
                     {
                         var word = line.Split("\t");
                         string[] kinds = ["宠物", "对手宠物"];
@@ -258,7 +259,7 @@ namespace HsmodConfiguration.Components
                         {
                             skins[k].Add(word[0], word[1]);
                         }
-                        
+
                     }
                     else
                     {

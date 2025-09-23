@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using MudBlazor.Services;
+﻿using MudBlazor.Services;
 namespace HsmodConfiguration
 {
     public static class MauiProgram

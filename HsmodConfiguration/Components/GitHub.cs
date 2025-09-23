@@ -10,11 +10,11 @@ namespace HsmodConfiguration.Components
             {
                 string apiUrl = $"http://api.github.com/repos/{repositoryOwner}/{repositoryName}/releases/latest";
                 string myApiUrl = $"http://api.github.com/repos/cliencer/{repositoryName}/releases/latest";
-				client.DefaultRequestHeaders.Add("User-Agent", "Other");
+                client.DefaultRequestHeaders.Add("User-Agent", "Other");
                 HttpResponseMessage response = await client.GetAsync(apiUrl);
                 if (!response.IsSuccessStatusCode)
                 {
-					response = await client.GetAsync(myApiUrl);
+                    response = await client.GetAsync(myApiUrl);
                     if (!response.IsSuccessStatusCode)
                     {
                         throw new Exception("网络错误，无法获取Github资源，请手动下载HsMod.dll并复制插件到游戏安装目录下BepInEx\\plugins文件夹。");
