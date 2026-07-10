@@ -28,8 +28,8 @@
         <ApplicationId>com.cliencer.hsmodconfiguration</ApplicationId>
 
         <!-- Versions -->
-        <ApplicationDisplayVersion>1.0.6</ApplicationDisplayVersion>
-        <ApplicationVersion>7</ApplicationVersion>
+        <ApplicationDisplayVersion>1.0.7</ApplicationDisplayVersion>
+        <ApplicationVersion>8</ApplicationVersion>
 
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
