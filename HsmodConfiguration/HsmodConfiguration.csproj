@@ -28,8 +28,8 @@
         <ApplicationId>com.cliencer.hsmodconfiguration</ApplicationId>
 
         <!-- Versions -->
-        <ApplicationDisplayVersion>1.0.6</ApplicationDisplayVersion>
-        <ApplicationVersion>7</ApplicationVersion>
+        <ApplicationDisplayVersion>1.0.7</ApplicationDisplayVersion>
+        <ApplicationVersion>8</ApplicationVersion>
 
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">14.2</SupportedOSPlatformVersion>
         <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">14.0</SupportedOSPlatformVersion>
@@ -90,9 +90,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-        <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
+        <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.100" />
+        <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.100" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.100" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
         <PackageReference Include="MudBlazor" Version="8.12.0" />
     </ItemGroup>

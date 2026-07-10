@@ -26,8 +26,20 @@ jobs:
         }
     
     - name: .NET MAUI Build
-      run:  dotnet publish ./HsmodConfiguration/HsmodConfiguration.csproj  --configuration Release --verbosity minimal --framework net8.0-windows10.0.19041.0 -p:ArchiveOnBuild=true --output ./HsMod_Configuration
-
+      run: |
+        dotnet publish ./HsmodConfiguration/HsmodConfiguration.csproj `
+          --configuration Release `
+          --verbosity minimal `
+          --framework net8.0-windows10.0.19041.0 `
+          --runtime win-x64 `
+          --output ./HsMod_Configuration `
+          -p:WindowsAppSdkBootstrapInitialize=false `
+          -p:WindowsAppSDKSelfContained=false `
+          -p:PublishAppxPackage=false `
+          -p:UseMaui=true `
+          -p:WindowsPackageType=None `
+          -p:EnableMsixTooling=false
+          
     - name: Clean File
       run: |
           Set-Location ./HsMod_Configuration
